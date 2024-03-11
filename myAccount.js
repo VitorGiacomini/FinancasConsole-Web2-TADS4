@@ -53,20 +53,63 @@ function dashboard() {
 
 function consultaSaldo() {
   console.log("### Consultando saldo ###");
+
+  const saldo = fs.readFileSync(caminhoUsuario);
+  const saldoUsuario = JSON.parse(saldo);
+  console.log(chalk.bgGreen.white(`Saldo disponível na conta: ${saldoUsuario.saldo}`));
+
+  dashboard();
+
   //Programe a operação de consulta de saldo aqui
   /*Não esqueça de invocar a função dashboard() após a execução
   da operação para o usuário poder continuar operando sua conta; */
 }
 
 function deposita() {
-  console.log("### Depositando ###");
-  //Programe a operação de depósito aqui
-  /*Não esqueça de invocar a função dashboard() após a execução
-  da operação para o usuário poder continuar operando sua conta; */
+  const saldo = fs.readFileSync(caminhoUsuario);
+  const saldoUsuario = JSON.parse(saldo);
+
+  inquirer
+      .prompt([
+          {
+              type: 'input',
+              name: 'valor',
+              message: chalk.yellow('Informe o valor que deseja depositar: '),
+          }
+      ])
+      .then((value) => {
+          let novoSaldo = parseFloat(saldoUsuario.saldo) + parseFloat(value.valor);
+          saldoUsuario.saldo = novoSaldo.toFixed(2);
+
+          fs.writeFileSync(caminhoUsuario, JSON.stringify(saldoUsuario));
+          console.log(chalk.bgGreen.white(`Depósito realizado com sucesso!`));
+          dashboard();
+      })
 }
+
 
 function saca() {
   console.log("### Sacando ###");
+
+  const saldo = fs.readFileSync(caminhoUsuario);
+  const saldoUsuario = JSON.parse(saldo);
+
+  inquirer
+      .prompt([
+          {
+              type: 'input',
+              name: 'valor',
+              message: chalk.yellow('Informe o valor que deseja sacar: '),
+          }
+      ])
+      .then((value) => {
+          let novoSaldo = parseFloat(saldoUsuario.saldo) - parseFloat(value.valor);
+          saldoUsuario.saldo = novoSaldo.toFixed(2);
+
+          fs.writeFileSync(caminhoUsuario, JSON.stringify(saldoUsuario));
+          console.log(chalk.bgGreen.white(`Saque realizado com sucesso!`));
+          dashboard();
+      })
   //Programe a operação de saque aqui
   /*Não esqueça de invocar a função dashboard() após a execução
   da operação para o usuário poder continuar operando sua conta; */
